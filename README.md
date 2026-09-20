@@ -7,6 +7,19 @@ banco (**retorno**) para saber quem pagou. É a peça de mainframe do
 ecossistema **FlowPay → FLOWCNAB → CopyBridge**, mas funciona de forma
 100% independente — não depende dos outros dois projetos para existir.
 
+**Repositório:** <https://github.com/ZeHoschett/flowcnab>
+
+```bash
+git clone https://github.com/ZeHoschett/flowcnab.git
+cd flowcnab
+bash scripts/run_e2e.sh
+```
+
+> Escrito em **COBOL** (GnuCOBOL 3.3), sem mainframe: roda em Linux,
+> macOS ou Windows via Git Bash. Os scripts em Python e Shell existem
+> só para gerar carga de teste, validar os copybooks e orquestrar o
+> fluxo — a lógica de negócio está inteira nos três `.cbl`.
+
 ## O que o projeto faz
 
 1. **Geração de remessa** (`remessa/GERAREM.cbl`): lê uma lista de
