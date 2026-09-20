@@ -1,0 +1,21 @@
+{
+    // COB_LS_FIXED=Y impede o GnuCOBOL de truncar os espacos a direita
+    // em arquivos LINE SEQUENTIAL - sem isso as linhas do CNAB 240
+    // deixam de ter 240 bytes fixos. Precisa estar definido nos tres
+    // sistemas, senao as tasks do VS Code rodam sem ele.
+    "terminal.integrated.env.linux": {
+        "COB_LS_FIXED": "Y"
+    },
+    "terminal.integrated.env.windows": {
+        "COB_LS_FIXED": "Y"
+    },
+    "terminal.integrated.env.osx": {
+        "COB_LS_FIXED": "Y"
+    },
+    "files.associations": {
+        "*.cbl": "cobol",
+        "*.cpy": "cobol",
+        "*.CBL": "cobol",
+        "*.CPY": "cobol"
+    }
+}

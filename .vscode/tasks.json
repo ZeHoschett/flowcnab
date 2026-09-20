@@ -1,0 +1,79 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "FLOWCNAB: Rodar fluxo completo (remessa -> retorno -> conciliacao)",
+            "type": "shell",
+            "command": "bash scripts/run_e2e.sh",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            "label": "FLOWCNAB: Rodar testes de regressao",
+            "type": "shell",
+            "command": "bash scripts/test_e2e.sh",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            "label": "FLOWCNAB: Validar tamanho dos copybooks",
+            "type": "shell",
+            "command": "python scripts/check_len.py",
+            "problemMatcher": [],
+            "presentation": { "reveal": "always", "panel": "dedicated" }
+        },
+        {
+            "label": "FLOWCNAB: Compilar GERAREM",
+            "type": "shell",
+            "command": "cobc -x -I copybooks -o remessa/gerarem remessa/GERAREM.cbl",
+            "problemMatcher": [],
+            "presentation": { "reveal": "always", "panel": "dedicated" }
+        },
+        {
+            "label": "FLOWCNAB: Compilar SIMBANCO",
+            "type": "shell",
+            "command": "cobc -x -I copybooks -o simulador/simbanco simulador/SIMBANCO.cbl",
+            "problemMatcher": [],
+            "presentation": { "reveal": "always", "panel": "dedicated" }
+        },
+        {
+            "label": "FLOWCNAB: Compilar PROCRET",
+            "type": "shell",
+            "command": "cobc -x -I copybooks -o retorno/procret retorno/PROCRET.cbl",
+            "problemMatcher": [],
+            "presentation": { "reveal": "always", "panel": "dedicated" }
+        },
+        {
+            "label": "FLOWCNAB: Compilar tudo",
+            "dependsOn": [
+                "FLOWCNAB: Compilar GERAREM",
+                "FLOWCNAB: Compilar SIMBANCO",
+                "FLOWCNAB: Compilar PROCRET"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "FLOWCNAB: Limpar saidas (dados/ e saida/)",
+            "type": "shell",
+            "command": "rm -f dados/cobrancas_pendentes.txt dados/titulos_status.txt dados/titulos_status_novo.txt saida/*.TXT",
+            "problemMatcher": []
+        }
+    ]
+}

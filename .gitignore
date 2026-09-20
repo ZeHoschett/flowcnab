@@ -1,0 +1,17 @@
+# Binarios compilados pelo cobc (recompilados por run_e2e.sh/test_e2e.sh)
+remessa/gerarem
+remessa/gerarem.exe
+simulador/simbanco
+simulador/simbanco.exe
+retorno/procret
+retorno/procret.exe
+
+# Arquivos gerados pelo fluxo batch
+dados/*.txt
+saida/*.TXT
+saida/*.TMP
+
+# Ruido de SO / editor
+Thumbs.db
+.DS_Store
+*.swp

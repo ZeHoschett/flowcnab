@@ -1,0 +1,7 @@
+services:
+  flowcnab:
+    build: .
+    volumes:
+      - ./dados:/flowcnab/dados
+      - ./saida:/flowcnab/saida
+    # roda o fluxo completo (remessa -> simulador -> retorno) e sai

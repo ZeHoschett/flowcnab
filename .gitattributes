@@ -1,0 +1,12 @@
+# Fontes COBOL sao colunados: normalizar o fim de linha evita que um
+# CRLF perdido conte como coluna e desloque o codigo. Ver a divida
+# tecnica de fim de linha misturado no CLAUDE.md.
+* text=auto eol=lf
+
+# O GitHub Linguist reconhece .cbl e .cpy como COBOL; explicitamos
+# para o projeto aparecer como COBOL, que e a linguagem principal.
+*.cbl linguist-language=COBOL
+*.cpy linguist-language=COBOL
+*.CBL linguist-language=COBOL
+*.CPY linguist-language=COBOL
+*.JCL linguist-language=JCL
