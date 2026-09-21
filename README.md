@@ -1,11 +1,11 @@
-# FLOWCNAB — Batch de Remessa e Retorno Bancário (CNAB 240)
+# FLOWCNAB  Batch de Remessa e Retorno Bancário (CNAB 240)
 
 Simulação do processo noturno (batch) que qualquer empresa que cobra
 clientes em volume precisa rodar: empacotar as cobranças pendentes num
 arquivo que o banco entende (**remessa**), e depois ler a resposta do
 banco (**retorno**) para saber quem pagou. É a peça de mainframe do
 ecossistema **FlowPay → FLOWCNAB → CopyBridge**, mas funciona de forma
-100% independente — não depende dos outros dois projetos para existir.
+100% independente  não depende dos outros dois projetos para existir.
 
 **Repositório:** <https://github.com/ZeHoschett/flowcnab>
 
@@ -18,7 +18,7 @@ bash scripts/run_e2e.sh
 > Escrito em **COBOL** (GnuCOBOL 3.3), sem mainframe: roda em Linux,
 > macOS ou Windows via Git Bash. Os scripts em Python e Shell existem
 > só para gerar carga de teste, validar os copybooks e orquestrar o
-> fluxo — a lógica de negócio está inteira nos três `.cbl`.
+> fluxo  a lógica de negócio está inteira nos três `.cbl`.
 
 ## O que o projeto faz
 
@@ -28,20 +28,20 @@ bash scripts/run_e2e.sh
    hierarquia padrão FEBRABAN: header de arquivo → header de lote →
    um registro de detalhe (segmentos **P** + **Q**) por cobrança →
    trailer de lote → trailer de arquivo. Cada linha tem exatamente
-   **240 posições fixas** — isso é a regra do jogo, e é validado
+   **240 posições fixas**  isso é a regra do jogo, e é validado
    automaticamente (ver `scripts/check_len.py` e `scripts/test_e2e.sh`).
    A entrada passa por uma crítica antes de virar título: nosso número
    inválido ou zerado, valor zerado ou não numérico, vencimento
    inválido, campo numérico do pagador (CEP, CPF/CNPJ, tipo de
    inscrição) não numérico e **nosso número duplicado** são descartados
    com aviso. A régua é uma só: nada que vire `PIC 9` no CNAB entra sem
-   ser numérico — um `MOVE` de texto para campo numérico não falha em
+   ser numérico  um `MOVE` de texto para campo numérico não falha em
    COBOL, grava zeros (ou as próprias letras) e o erro só apareceria no
    banco. E um nosso número repetido quebra a conciliação lá na frente.
 
 2. **Simulador de banco** (`simulador/SIMBANCO.cbl`): como não existe
    banco de verdade para testar contra, este programa lê a remessa
-   gerada e produz um arquivo de **retorno plausível** — a maioria dos
+   gerada e produz um arquivo de **retorno plausível** a maioria dos
    títulos é marcada como paga (parte no prazo, parte com atraso) e
    uma fração menor é rejeitada com motivos variados (saldo
    insuficiente, dados cadastrais inconsistentes, título já baixado).
@@ -49,7 +49,7 @@ bash scripts/run_e2e.sh
    projeto, não uma gambiarra.**
 
 3. **Processamento de retorno + conciliação** (`retorno/PROCRET.cbl`):
-   lê o arquivo de retorno (do simulador, ou de um banco de verdade —
+   lê o arquivo de retorno (do simulador, ou de um banco de verdade
    o layout é o mesmo), identifica cada cobrança pelo **nosso número**,
    atualiza o status dela (`PAGO`, `PAGO COM ATRASO` ou `REJEITADO` com
    o motivo) e gera um **relatório de conciliação**: quantos títulos
@@ -82,7 +82,7 @@ titulos_status.txt  ---->  [ PROCRET ]  ---->  titulos_status_novo.txt
 - **Um banco, um tipo de cobrança.** Só boleto via CNAB 240, layout do
   **Itaú (341)**, com os segmentos obrigatórios da remessa (P, Q) e do
   retorno (T, U). Nenhum outro banco ou meio de cobrança (PIX, débito
-  automático, TED) é tratado — o objetivo é ir fundo no layout de um
+  automático, TED) é tratado o objetivo é ir fundo no layout de um
   banco só, não cobrir todos.
 - **Persistência em arquivo texto de largura fixa, não banco
   relacional.** A "tabela" de cobranças pendentes
@@ -93,7 +93,7 @@ titulos_status.txt  ---->  [ PROCRET ]  ---->  titulos_status_novo.txt
   (a outra seria uma tabela PostgreSQL acessada via `EXEC SQL` com
   OCESQL). O schema equivalente para essa segunda opção está
   documentado em `sql/schema.sql`, incluindo o exemplo de acesso via
-  OCESQL, como caminho natural de evolução — trocar os `SELECT`/`OPEN
+  OCESQL, como caminho natural de evolução trocar os `SELECT`/`OPEN
   INPUT` em arquivo pelos `EXEC SQL` correspondentes não exige mudar a
   estrutura dos copybooks.
 - **Sem preocupação com volume/performance.** O foco é a correção do
@@ -104,7 +104,7 @@ titulos_status.txt  ---->  [ PROCRET ]  ---->  titulos_status_novo.txt
   mostra como este processo seria agendado e encadeado em um z/OS
   real (STEPLIBs, DDs de arquivo, sugestão de horários via
   agendador). A execução de fato acontece via **GnuCOBOL local**
-  (Docker ou instalação direta) — isso está documentado no próprio
+  (Docker ou instalação direta) isso está documentado no próprio
   JCL para não passar a impressão de que ele roda "de verdade" aqui.
 
 ## Estrutura do repositório
@@ -139,7 +139,7 @@ saida/        REMESSA.TXT, RETORNO.TXT, CONCILIACAO.TXT (gerados)
 
 ## Convenções internas
 
-Três contratos que valem para os três programas — quebrá-los é o tipo
+Três contratos que valem para os três programas quebrá-los é o tipo
 de bug que não aparece no dia em que se escreve o código:
 
 ### Formato de data
@@ -152,7 +152,7 @@ de bug que não aparece no dia em que se escreve o código:
 A conversão acontece em **exatamente dois lugares**:
 `GERAREM.520-CONVERTER-VENCIMENTO` (ao gravar o segmento P) e
 `PROCRET.560-CONVERTER-DATA-OCORRENCIA` (ao ler o segmento U). Comparar
-`DDMMAAAA` numericamente dá resultado errado — `01/10/2026` vira
+`DDMMAAAA` numericamente dá resultado errado  `01/10/2026` vira
 `01102026`, que é *menor* que `20/09/2026` = `20092026` — e era
 exatamente assim que o "pago com atraso" seria decidido pelo motivo
 errado.
@@ -163,7 +163,7 @@ Código do banco, dados da empresa, códigos de layout, códigos de
 ocorrência e o limite de títulos ficam em `copybooks/FLOWCNAB-CONST.cpy`
 como constantes de compilação (nível 78), copiadas pelos três
 programas. Nenhum `.cbl` carrega `341`, o CNPJ ou o nome da empresa
-escrito à mão. É o ponto único a mudar se um dia entrar outro banco —
+escrito à mão. É o ponto único a mudar se um dia entrar outro banco
 o que, aliás, é o melhor argumento a favor da decisão de escopo de
 tratar só o Itaú.
 
@@ -187,7 +187,7 @@ gravar fora da tabela e morrer com violação de memória.
 
 ## Como rodar localmente
 
-### Opção 1 — GnuCOBOL local (caminho testado)
+### Opção 1 GnuCOBOL local (caminho testado)
 
 ```bash
 sudo apt-get install gnucobol4   # ou gnucobol, dependendo da distro
@@ -195,10 +195,10 @@ bash scripts/run_e2e.sh
 ```
 
 É assim que o projeto foi desenvolvido e é o que a bateria de
-regressão usa — GnuCOBOL 3.3, tanto no Linux quanto no Windows via
+regressão usa GnuCOBOL 3.3, tanto no Linux quanto no Windows via
 Git Bash.
 
-### Opção 2 — Docker (não validado)
+### Opção 2 Docker (não validado)
 
 ```bash
 docker compose up --build
@@ -206,7 +206,7 @@ docker compose up --build
 
 > **Aviso honesto:** o `Dockerfile` existe e tenta instalar
 > `gnucobol4`, `gnucobol` e `open-cobol` nessa ordem, porque o nome do
-> pacote varia entre releases do Ubuntu — mas ele **nunca foi
+> pacote varia entre releases do Ubuntu mas ele **nunca foi
 > executado de fato**. Se falhar, use a Opção 1, que é o caminho
 > coberto pelos testes.
 
@@ -231,13 +231,13 @@ sombreia as DLLs do GnuCOBOL e o binário compilado morre com
 > variável de ambiente `COB_LS_FIXED=Y` (já exportada pelo script e
 > pelo Dockerfile) instrui o runtime do GnuCOBOL a **não truncar os
 > espaços em branco no fim da linha**, preservando os 240 bytes fixos
-> exigidos pelo layout — sem isso, o GnuCOBOL grava linhas de
+> exigidos pelo layout  sem isso, o GnuCOBOL grava linhas de
 > comprimento variável (só o texto útil), o que ainda funciona para
 > este projeto (a releitura preenche com espaços de volta) mas deixa
 > de ser um arquivo CNAB 240 "de verdade" se aberto por outra
 > ferramenta.
 
-## Critério de "pronto" (v1) — verificado
+## Critério de "pronto" (v1) verificado
 
 Rodando `scripts/run_e2e.sh` a partir de uma base limpa, com a carga
 de teste de 20 cobranças:
@@ -248,8 +248,8 @@ de teste de 20 cobranças:
   rejeitados;
 - ✅ Retorno processado e relatório de conciliação batendo os
   números certos: 20 enviados = 12 + 6 + 2, com **pelo menos um caso
-  de erro tratado corretamente** (2, na verdade — motivos "SALDO
-  INSUFICIENTE" e "DADOS CADASTRAIS INCONSIST." — e o valor total
+  de erro tratado corretamente** (2, na verdade motivos "SALDO
+  INSUFICIENTE" e "DADOS CADASTRAIS INCONSIST." e o valor total
   conciliado refletindo apenas os títulos efetivamente pagos:
   R$ 27.282,83 de R$ 31.427,76 enviados);
 - ✅ O próprio relatório confere a identidade
@@ -260,7 +260,7 @@ de teste de 20 cobranças:
   nosso número duplicado, nosso número não numérico, campo numérico do
   pagador inválido, arquivo de entrada vazio, estouro da capacidade da
   tabela e as quatro anomalias de retorno (par T/U quebrado, retorno
-  órfão, ocorrência repetida e pagamento com valor divergente) — cada
+  órfão, ocorrência repetida e pagamento com valor divergente) cada
   uma com `RETURN-CODE 4` e linha própria no relatório.
 
 Para reproduzir a validação de layout (tamanho fixo por copybook):
@@ -278,11 +278,11 @@ bash scripts/test_e2e.sh
 
 ## Referências
 
-- **Manual de Cobrança CNAB 240 do Banco Itaú (código 341)** — layout
+- **Manual de Cobrança CNAB 240 do Banco Itaú (código 341)** layout
   dos segmentos P/Q (remessa) e T/U (retorno) e dos header/trailer de
   arquivo e de lote. Distribuído pelo próprio banco, na área de
   layouts de cobrança do Itaú.
-- **Padrão FEBRABAN CNAB 240** — a especificação genérica sobre a qual
+- **Padrão FEBRABAN CNAB 240** a especificação genérica sobre a qual
   o layout do Itaú é construído.
 
 Os PDFs dos manuais **não são versionados aqui** por serem material de
@@ -291,7 +291,7 @@ manual do Itaú de onde cada registro saiu, e a posição de cada campo
 está documentada no próprio copybook.
 
 Uma ressalva registrada de propósito: a conferência posicional do
-**segmento T** está pendente — as posições 1 a 188 conferem com o
+**segmento T** está pendente as posições 1 a 188 conferem com o
 padrão FEBRABAN, da 189 em diante o copybook diverge. Está tabelado em
 `copybooks/CNAB240-DET-T.cpy`. Como o SIMBANCO grava e o PROCRET lê o
 mesmo copybook, o fluxo do projeto fecha; um arquivo de retorno de um
