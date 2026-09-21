@@ -153,7 +153,7 @@ A conversão acontece em **exatamente dois lugares**:
 `GERAREM.520-CONVERTER-VENCIMENTO` (ao gravar o segmento P) e
 `PROCRET.560-CONVERTER-DATA-OCORRENCIA` (ao ler o segmento U). Comparar
 `DDMMAAAA` numericamente dá resultado errado  `01/10/2026` vira
-`01102026`, que é *menor* que `20/09/2026` = `20092026` — e era
+`01102026`, que é *menor* que `20/09/2026` = `20092026` e era
 exatamente assim que o "pago com atraso" seria decidido pelo motivo
 errado.
 
@@ -176,7 +176,7 @@ Convenção de batch, respeitada pelos três programas e verificada pelo
 |---|---|
 | `0` | tudo certo |
 | `4` | concluiu com aviso (títulos descartados na crítica, conciliação divergente) |
-| `8` | erro fatal — arquivo não abre, entrada vazia, capacidade estourada |
+| `8` | erro fatal, arquivo não abre, entrada vazia, capacidade estourada |
 
 ### Limite de títulos
 
@@ -254,7 +254,7 @@ de teste de 20 cobranças:
   R$ 27.282,83 de R$ 31.427,76 enviados);
 - ✅ O próprio relatório confere a identidade
   `enviados = pagos + com atraso + rejeitados + pendentes` e imprime
-  `Conferencia: OK` / `DIVERGENTE` — não é o leitor que precisa somar
+  `Conferencia: OK` / `DIVERGENTE` não é o leitor que precisa somar
   as linhas na mão;
 - ✅ `scripts/test_e2e.sh` passa (36 verificações), cobrindo também
   nosso número duplicado, nosso número não numérico, campo numérico do
